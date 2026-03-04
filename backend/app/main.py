@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from .db import engine, Base
 from .routers import products, stock, suppliers, purchase_orders, integrations
 
@@ -6,6 +7,15 @@ from .routers import products, stock, suppliers, purchase_orders, integrations
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Gestão de Estoque API")
+
+# Add CORS Middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # For production, specify the actual frontend URL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def health_check():
