@@ -106,9 +106,21 @@ export default function Products() {
                         <Filter size={18} />
                         Filtros
                     </Button>
-                    <Button variant="secondary" className="gap-2">
+                    <div className="relative">
+                        <input
+                            type="file"
+                            accept=".csv"
+                            onChange={handleImport}
+                            className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                        />
+                        <Button variant="secondary" className="gap-2">
+                            <Plus size={18} className="rotate-45" />
+                            Importar CSV
+                        </Button>
+                    </div>
+                    <Button onClick={handleExport} variant="secondary" className="gap-2">
                         <Download size={18} />
-                        Exportar
+                        Exportar CSV
                     </Button>
                 </div>
                 <Button onClick={() => setIsModalOpen(true)} className="gap-2">
@@ -125,7 +137,7 @@ export default function Products() {
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                         <div className="col-span-2">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nome</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nome do Produto</label>
                             <input
                                 required
                                 className="w-full bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 dark:text-white"
@@ -134,7 +146,7 @@ export default function Products() {
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">SKU</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">SKU (Código Único)</label>
                             <input
                                 required
                                 className="w-full bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 dark:text-white"
@@ -143,30 +155,39 @@ export default function Products() {
                             />
                         </div>
                         <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Categoria</label>
+                            <input
+                                placeholder="Ex: Eletrônicos, Limpeza..."
+                                className="w-full bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 dark:text-white"
+                                value={formData.category}
+                                onChange={e => setFormData({ ...formData, category: e.target.value })}
+                            />
+                        </div>
+                        <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Estoque Mínimo</label>
                             <input
                                 type="number"
                                 className="w-full bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 dark:text-white"
                                 value={formData.min_stock}
-                                onChange={e => setFormData({ ...formData, min_stock: parseInt(e.target.value) })}
+                                onChange={e => setFormData({ ...formData, min_stock: parseInt(e.target.value || '0') })}
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Custo (R$)</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Custo Unitário (R$)</label>
                             <input
                                 type="number" step="0.01"
                                 className="w-full bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 dark:text-white"
                                 value={formData.cost}
-                                onChange={e => setFormData({ ...formData, cost: parseFloat(e.target.value) })}
+                                onChange={e => setFormData({ ...formData, cost: parseFloat(e.target.value || '0') })}
                             />
                         </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Preço Venda (R$)</label>
+                        <div className="col-span-2">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Preço de Venda (R$)</label>
                             <input
                                 type="number" step="0.01"
-                                className="w-full bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 dark:text-white"
+                                className="w-full bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 dark:text-white font-bold text-lg"
                                 value={formData.price}
-                                onChange={e => setFormData({ ...formData, price: parseFloat(e.target.value) })}
+                                onChange={e => setFormData({ ...formData, price: parseFloat(e.target.value || '0') })}
                             />
                         </div>
                     </div>

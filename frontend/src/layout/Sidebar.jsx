@@ -1,4 +1,3 @@
-import React from 'react';
 import {
     LayoutDashboard,
     Package,
@@ -6,14 +5,20 @@ import {
     ArrowLeftRight,
     ShoppingCart,
     ExternalLink,
-    Settings
+    Settings,
+    BarChart3,
+    History,
+    ShieldCheck,
+    FileText
 } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
+import { useAuth } from '../api/AuthContext';
 
-const navItems = [
+const getNavItems = (isAdmin) => [
     {
         group: 'Principal', items: [
             { name: 'Dashboard', icon: LayoutDashboard, path: '/' },
+            { name: 'Relatórios', icon: BarChart3, path: '/reports' },
         ]
     },
     {
@@ -26,17 +31,23 @@ const navItems = [
         group: 'Operações', items: [
             { name: 'Movimentações', icon: ArrowLeftRight, path: '/stock' },
             { name: 'Pedidos de Compra', icon: ShoppingCart, path: '/purchase-orders' },
+            { name: 'Histórico', icon: History, path: '/history' },
         ]
     },
-    {
-        group: 'Configurações', items: [
+    ...(isAdmin ? [{
+        group: 'Administração', items: [
+            { name: 'Usuários', icon: Users, path: '/users' },
+            { name: 'Solicitações', icon: FileText, path: '/access-requests' },
+            { name: 'Logs de Acesso', icon: ShieldCheck, path: '/logs' },
             { name: 'Integrações', icon: ExternalLink, path: '/integrations' },
-            { name: 'Sistema', icon: Settings, path: '/settings' },
+            { name: 'Configurações', icon: Settings, path: '/settings' },
         ]
-    },
+    }] : []),
 ];
 
 export function Sidebar() {
+    const { isAdmin } = useAuth();
+    const navItems = getNavItems(isAdmin);
     return (
         <aside className="w-64 h-screen bg-[#1F2937] text-gray-400 flex flex-col fixed left-0 top-0 z-30 transition-all shadow-xl">
             <div className="p-6 border-b border-gray-700 flex items-center justify-between">

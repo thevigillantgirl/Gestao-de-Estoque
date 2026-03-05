@@ -1,13 +1,14 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from typing import List
-from .. import models, schemas
-from ..db import get_db
+from .. import models, schemas, security
+from ..security import get_db, get_current_user
 
-router = APIRouter(prefix="/purchase-orders", tags=["purchase-orders"])
+router = APIRouter(prefix="/purchase-orders", tags=["Purchase Orders"])
 
 @router.post("/", response_model=schemas.PurchaseOrder)
-def create_purchase_order(po: schemas.PurchaseOrderCreate, db: Session = Depends(get_db)):
+def create_purchase_order(
+    po: schemas.PurchaseOrderCreate, 
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
     # Verify supplier
     supplier = db.query(models.Supplier).filter(models.Supplier.id == po.supplier_id).first()
     if not supplier:
@@ -39,11 +40,19 @@ def create_purchase_order(po: schemas.PurchaseOrderCreate, db: Session = Depends
     return new_po
 
 @router.get("/", response_model=List[schemas.PurchaseOrder])
-def list_purchase_orders(db: Session = Depends(get_db)):
+def list_purchase_orders(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
     return db.query(models.PurchaseOrder).all()
 
 @router.patch("/{po_id}/status", response_model=schemas.PurchaseOrder)
-def update_purchase_order_status(po_id: int, status_update: schemas.PurchaseOrderUpdateStatus, db: Session = Depends(get_db)):
+def update_purchase_order_status(
+    po_id: int, 
+    status_update: schemas.PurchaseOrderUpdateStatus, 
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
     po = db.query(models.PurchaseOrder).filter(models.PurchaseOrder.id == po_id).first()
     if not po:
         raise HTTPException(status_code=404, detail="Purchase Order not found")

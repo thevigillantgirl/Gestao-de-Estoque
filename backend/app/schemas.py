@@ -10,6 +10,7 @@ class ProductBase(BaseModel):
     price: float = 0.0
     stock: int = 0
     min_stock: int = 0
+    category: Optional[str] = None
     is_active: bool = True
 
 class ProductCreate(ProductBase):
@@ -97,4 +98,104 @@ class IntegrationEvent(BaseModel):
     status: str
     last_error: Optional[str] = None
     created_at: datetime
+    model_config = ConfigDict(from_attributes=True)
+
+# User
+class UserBase(BaseModel):
+    email: str
+    name: Optional[str] = None
+    role: str = "USER"
+    is_active: bool = True
+
+class UserCreate(UserBase):
+    password: str
+
+class UserUpdate(BaseModel):
+    email: Optional[str] = None
+    role: Optional[str] = None
+    is_active: Optional[bool] = None
+    password: Optional[str] = None
+
+class User(UserBase):
+    id: int
+    created_at: datetime
+    model_config = ConfigDict(from_attributes=True)
+
+# Auth
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    email: Optional[str] = None
+    role: Optional[str] = None
+
+# Access Log
+class AccessLogBase(BaseModel):
+    user_id: Optional[int] = None
+    timestamp: Optional[datetime] = None
+    ip_address: Optional[str] = None
+    user_agent: Optional[str] = None
+    path: str
+    method: str
+    event_type: str
+    status_code: Optional[int] = None
+    details: Optional[str] = None
+
+class AccessLog(AccessLogBase):
+    id: int
+    user: Optional[User] = None
+    model_config = ConfigDict(from_attributes=True)
+
+# Access Request
+class AccessRequestBase(BaseModel):
+    name: str
+    email: str
+    company: Optional[str] = None
+    message: Optional[str] = None
+
+class AccessRequestCreate(AccessRequestBase):
+    pass
+
+class AccessRequestUpdate(BaseModel):
+    status: str # "APPROVED", "REJECTED"
+
+class AccessRequest(AccessRequestBase):
+    id: int
+    status: str
+    created_at: datetime
+    reviewed_at: Optional[datetime] = None
+    reviewed_by_user_id: Optional[int] = None
+    model_config = ConfigDict(from_attributes=True)
+
+# Dashboard & Reports
+class DashboardStats(BaseModel):
+    total_inventory_value: float
+    total_products: int
+    low_stock_count: int
+    today_movements: int
+    open_purchase_orders: int
+
+class StockMovementPoint(BaseModel):
+    date: str
+    entradas: int
+    saidas: int
+
+class ProductStockPoint(BaseModel):
+    name: str
+    stock: int
+
+class CategoryPoint(BaseModel):
+    name: str
+    value: float
+
+class DashboardCharts(BaseModel):
+    stock_movements: List[StockMovementPoint]
+    top_products: List[ProductStockPoint]
+    category_distribution: List[CategoryPoint]
+
+# Settings
+class SystemSettings(BaseModel):
+    low_stock_email_recipient: Optional[str] = None
+    email_alerts_enabled: bool
     model_config = ConfigDict(from_attributes=True)

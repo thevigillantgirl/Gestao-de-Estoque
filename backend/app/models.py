@@ -13,6 +13,7 @@ class Product(Base):
     price = Column(Float, default=0.0)
     stock = Column(Integer, default=0)
     min_stock = Column(Integer, default=0)
+    category = Column(String, nullable=True)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
@@ -83,6 +84,57 @@ class IntegrationEvent(Base):
     status = Column(String, default="PENDING")  # "PENDING", "SENT", "FAILED"
     last_error = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=True)
+    email = Column(String, unique=True, index=True, nullable=False)
+    hashed_password = Column(String, nullable=False)
+    role = Column(String, default="USER")  # "ADMIN", "USER"
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class AccessLog(Base):
+    __tablename__ = "access_logs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    timestamp = Column(DateTime(timezone=True), server_default=func.now())
+    ip_address = Column(String, nullable=True)
+    user_agent = Column(String, nullable=True)
+    path = Column(String, nullable=False)
+    method = Column(String, nullable=False)
+    event_type = Column(String, nullable=False) # e.g., "LOGIN_SUCCESS", "CREATE_PRODUCT"
+    status_code = Column(Integer, nullable=True)
+    details = Column(Text, nullable=True)
+
+    user = relationship("User", foreign_keys=[user_id])
+
+class AccessRequest(Base):
+    __tablename__ = "access_requests"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    email = Column(String, nullable=False)
+    company = Column(String, nullable=True)
+    message = Column(Text, nullable=True)
+    status = Column(String, default="PENDING") # "PENDING", "APPROVED", "REJECTED"
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    reviewed_at = Column(DateTime(timezone=True), nullable=True)
+    reviewed_by_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+
+    reviewer = relationship("User", foreign_keys=[reviewed_by_user_id])
+
+class SystemSettings(Base):
+    __tablename__ = "system_settings"
+
+    id = Column(Integer, primary_key=True, index=True)
+    low_stock_email_recipient = Column(String, nullable=True)
+    email_alerts_enabled = Column(Boolean, default=True)
+    last_low_stock_check = Column(DateTime(timezone=True), nullable=True)
 
 import json
 

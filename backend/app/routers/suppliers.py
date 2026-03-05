@@ -1,10 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from typing import List
-from .. import models, schemas
-from ..db import get_db
+from .. import models, schemas, security
+from ..security import get_db, get_current_user
 
-router = APIRouter(prefix="/suppliers", tags=["suppliers"])
+router = APIRouter(prefix="/suppliers", tags=["Suppliers"])
 
 @router.post("/", response_model=schemas.Supplier)
 def create_supplier(supplier: schemas.SupplierCreate, db: Session = Depends(get_db)):

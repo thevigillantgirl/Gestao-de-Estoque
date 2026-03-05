@@ -12,6 +12,8 @@ export default function PurchaseOrders() {
     const [suppliers, setSuppliers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+    const [selectedOrder, setSelectedOrder] = useState(null);
 
     // Create state
     const [newOrder, setNewOrder] = useState({
@@ -45,9 +47,18 @@ export default function PurchaseOrders() {
         try {
             await api.patch(`/purchase-orders/${id}/status`, { status });
             fetchData();
+            if (selectedOrder?.id === id) {
+                const updatedOrder = orders.find(o => o.id === id);
+                setSelectedOrder({ ...updatedOrder, status });
+            }
         } catch (error) {
             alert(error.response?.data?.detail || 'Erro ao atualizar status');
         }
+    };
+
+    const handleViewDetail = (order) => {
+        setSelectedOrder(order);
+        setIsDetailModalOpen(true);
     };
 
     const handleCreateOrder = async (e) => {
@@ -79,7 +90,7 @@ export default function PurchaseOrders() {
         {
             header: 'Pedido #',
             render: (row) => (
-                <div className="flex items-center gap-2 font-bold text-gray-900 dark:text-white">
+                <div onClick={() => handleViewDetail(row)} className="flex items-center gap-2 font-bold text-blue-600 dark:text-blue-400 cursor-pointer hover:underline">
                     <ChevronRight size={14} className="text-gray-400" />
                     {row.id.toString().padStart(4, '0')}
                 </div>
@@ -111,6 +122,9 @@ export default function PurchaseOrders() {
             header: 'Ações',
             render: (row) => (
                 <div className="flex gap-2">
+                    <Button size="sm" variant="secondary" onClick={() => handleViewDetail(row)} className="p-1.5 min-w-0">
+                        <Info size={14} />
+                    </Button>
                     {row.status === 'DRAFT' && (
                         <Button size="sm" variant="secondary" onClick={() => handleUpdateStatus(row.id, 'SENT')} className="gap-1">
                             <Send size={14} /> Enviar
@@ -139,6 +153,7 @@ export default function PurchaseOrders() {
                 <DataTable columns={columns} data={orders} isLoading={loading} />
             </div>
 
+            {/* Modal de Criação */}
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Novo Pedido de Compra">
                 <form onSubmit={handleCreateOrder} className="space-y-6">
                     <div>
@@ -216,6 +231,87 @@ export default function PurchaseOrders() {
                     </div>
                 </form>
             </Modal>
+
+            {/* Modal de Detalhes */}
+            <Modal
+                isOpen={isDetailModalOpen}
+                onClose={() => setIsDetailModalOpen(false)}
+                title={`Detalhes do Pedido #${selectedOrder?.id?.toString().padStart(4, '0')}`}
+            >
+                {selectedOrder && (
+                    <div className="space-y-6">
+                        <div className="flex justify-between items-start border-b border-gray-100 dark:border-slate-700 pb-4">
+                            <div>
+                                <p className="text-xs text-gray-500 uppercase font-bold tracking-wider">Fornecedor</p>
+                                <p className="text-lg font-bold text-gray-900 dark:text-white">
+                                    {suppliers.find(s => s.id === selectedOrder.supplier_id)?.name}
+                                </p>
+                            </div>
+                            <StatusBadge status={selectedOrder.status} />
+                        </div>
+
+                        <div className="space-y-4">
+                            <h4 className="text-sm font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                                <Package size={16} className="text-gray-400" />
+                                Itens do Pedido
+                            </h4>
+                            <div className="bg-gray-50 dark:bg-slate-900 rounded-xl overflow-hidden border border-gray-100 dark:border-slate-700">
+                                <table className="w-full text-left text-sm">
+                                    <thead className="bg-gray-100 dark:bg-slate-800 text-gray-500 text-[10px] font-bold uppercase">
+                                        <tr>
+                                            <th className="px-4 py-2">Produto</th>
+                                            <th className="px-4 py-2 text-right">Qtd</th>
+                                            <th className="px-4 py-2 text-right">Unitário</th>
+                                            <th className="px-4 py-2 text-right">Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
+                                        {selectedOrder.items.map((item, i) => {
+                                            const p = products.find(prod => prod.id === item.product_id);
+                                            return (
+                                                <tr key={i}>
+                                                    <td className="px-4 py-3 font-medium text-gray-700 dark:text-gray-300">
+                                                        {p?.name || `Produto #${item.product_id}`}
+                                                    </td>
+                                                    <td className="px-4 py-3 text-right">{item.quantity}</td>
+                                                    <td className="px-4 py-3 text-right">R$ {item.unit_cost.toLocaleString()}</td>
+                                                    <td className="px-4 py-3 text-right font-bold text-gray-900 dark:text-white">
+                                                        R$ {(item.quantity * item.unit_cost).toLocaleString()}
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                    <tfoot className="bg-gray-100 dark:bg-slate-800 font-bold">
+                                        <tr>
+                                            <td colSpan="3" className="px-4 py-3 text-right text-gray-500">Total do Pedido</td>
+                                            <td className="px-4 py-3 text-right text-indigo-600 dark:text-indigo-400">
+                                                R$ {selectedOrder.items.reduce((acc, curr) => acc + (curr.quantity * curr.unit_cost), 0).toLocaleString()}
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div className="flex justify-end gap-3 pt-2">
+                            {selectedOrder.status === 'DRAFT' && (
+                                <Button onClick={() => handleUpdateStatus(selectedOrder.id, 'SENT')} className="gap-2">
+                                    <Send size={16} /> Enviar Pedido
+                                </Button>
+                            )}
+                            {selectedOrder.status === 'SENT' && (
+                                <Button onClick={() => handleUpdateStatus(selectedOrder.id, 'RECEIVED')} className="gap-2 bg-green-600 hover:bg-green-700">
+                                    <CheckCircle size={16} /> Confirmar Recebimento
+                                </Button>
+                            )}
+                            <Button variant="secondary" onClick={() => setIsDetailModalOpen(false)}>Fechar</Button>
+                        </div>
+                    </div>
+                )}
+            </Modal>
         </div>
     );
 }
+
+import { Info } from 'lucide-react';

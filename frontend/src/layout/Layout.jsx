@@ -31,7 +31,12 @@ export function Layout() {
             '/stock': 'Movimentações de Estoque',
             '/purchase-orders': 'Pedidos de Compra',
             '/integrations': 'Integrações Externas',
-            '/settings': 'Configurações do Sistema'
+            '/settings': 'Configurações do Sistema',
+            '/reports': 'Relatórios e BI',
+            '/logs': 'Logs de Auditoria',
+            '/users': 'Gestão de Usuários',
+            '/access-requests': 'Solicitações de Acesso',
+            '/history': 'Histórico de Movimentações'
         };
         return titles[path] || 'Página';
     };

@@ -1,12 +1,9 @@
 import requests
 import json
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from typing import List
-from .. import models, schemas
-from ..db import get_db
+from .. import models, schemas, security
+from ..security import get_db, get_current_user
 
-router = APIRouter(prefix="/integrations", tags=["integrations"])
+router = APIRouter(prefix="/integrations", tags=["Integrations"])
 
 @router.post("/endpoints", response_model=schemas.IntegrationEndpoint)
 def create_endpoint(endpoint: schemas.IntegrationEndpointCreate, db: Session = Depends(get_db)):
