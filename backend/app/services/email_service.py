@@ -53,3 +53,17 @@ def send_access_request_notification(name: str, email: str, company: Optional[st
     """
     
     return send_email(subject, body, admin_email)
+def send_approval_notification(to_email: str, name: str):
+    subject = "Acesso Liberado - ERP Gestão PRO"
+    body = f"""
+    Olá {name},
+
+    Sua solicitação de acesso ao sistema de Gestão de Estoque foi APROVADA!
+    Você já pode acessar a plataforma utilizando o e-mail: {to_email}
+
+    Se você ainda não definiu sua senha, entre em contato com seu administrador.
+
+    Atenciosamente,
+    Equipe de Administração
+    """
+    return send_email(subject, body, to_email)

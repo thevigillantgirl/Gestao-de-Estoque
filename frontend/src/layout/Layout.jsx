@@ -35,7 +35,6 @@ export function Layout() {
             '/reports': 'Relatórios e BI',
             '/logs': 'Logs de Auditoria',
             '/users': 'Gestão de Usuários',
-            '/access-requests': 'Solicitações de Acesso',
             '/history': 'Histórico de Movimentações'
         };
         return titles[path] || 'Página';

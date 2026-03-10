@@ -16,7 +16,7 @@ async def login_for_access_token(
 ):
     user = db.query(models.User).filter(models.User.email == form_data.username).first()
     
-    if not user or not security.verify_password(form_data.password, user.hashed_password) or not user.is_active:
+    if not user or not security.verify_password(form_data.password, user.password_hash) or not user.is_active:
         # Log failed login
         audit_service.log_event(
             db,
@@ -30,7 +30,7 @@ async def login_for_access_token(
             details=f"E-mail: {form_data.username}" + (" (Desativado)" if user and not user.is_active else "")
         )
         raise HTTPException(
-            status_code=status.HTTP_418_IM_A_TEAPOT if user and not user.is_active else status.HTTP_401_UNAUTHORIZED,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Credenciais inválidas ou conta desativada",
             headers={"WWW-Authenticate": "Bearer"},
         )
@@ -76,21 +76,44 @@ async def logout(
     )
     return {"message": "Sessão encerrada"}
 
-# Setup initial admin (for development)
-@router.post("/setup", status_code=status.HTTP_201_CREATED)
-async def setup_admin(db: Session = Depends(get_db)):
-    admin_exists = db.query(models.User).filter(models.User.role == "ADMIN").first()
-    if admin_exists:
-        raise HTTPException(status_code=400, detail="Admin already exists")
+@router.post("/register", response_model=schemas.User, status_code=status.HTTP_201_CREATED)
+async def register(
+    request: Request,
+    user_in: schemas.UserRegister,
+    db: Session = Depends(get_db)
+):
+    # Check if email already exists
+    db_user = db.query(models.User).filter(models.User.email == user_in.email).first()
+    if db_user:
+        raise HTTPException(status_code=400, detail="E-mail já cadastrado")
     
-    hashed_password = security.get_password_hash("admin123")
-    admin_user = models.User(
-        name="Administrador",
-        email="admin@erp.com",
-        hashed_password=hashed_password,
-        role="ADMIN",
+    # First user logic: if database is empty, first user is ADMIN
+    user_count = db.query(models.User).count()
+    role = "ADMIN" if user_count == 0 else "USER"
+    
+    hashed_password = security.get_password_hash(user_in.password)
+    new_user = models.User(
+        name=user_in.name,
+        email=user_in.email,
+        password_hash=hashed_password,
+        role=role,
         is_active=True
     )
-    db.add(admin_user)
+    db.add(new_user)
     db.commit()
-    return {"message": "Admin user created: admin@erp.com / admin123"}
+    db.refresh(new_user)
+    
+    # Log registration
+    audit_service.log_event(
+        db,
+        event_type="REGISTER_SUCCESS",
+        user_id=new_user.id,
+        ip_address=request.client.host,
+        user_agent=request.headers.get("user-agent"),
+        path="/auth/register",
+        method="POST",
+        status_code=201,
+        details=f"Novo cadastro: {new_user.email} (Role: {role})"
+    )
+    
+    return new_user

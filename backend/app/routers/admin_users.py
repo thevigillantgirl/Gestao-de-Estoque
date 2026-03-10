@@ -4,7 +4,6 @@ from typing import List, Optional
 from .. import models, schemas, security
 from ..security import get_db, check_admin
 from ..services import audit_service
-from datetime import datetime
 
 router = APIRouter(prefix="/admin", tags=["Admin Users"])
 
@@ -30,7 +29,7 @@ async def create_user(
     new_user = models.User(
         name=user_in.name,
         email=user_in.email,
-        hashed_password=hashed_password,
+        password_hash=hashed_password,
         role=user_in.role,
         is_active=user_in.is_active
     )
@@ -99,10 +98,9 @@ async def update_user_status(
     db.commit()
     db.refresh(user)
     
-    event = "USER_ENABLED" if user.is_active else "USER_DISABLED"
     audit_service.log_event(
         db,
-        event_type=event,
+        event_type="USER_STATUS_UPDATED",
         user_id=admin.id,
         ip_address=request.client.host,
         user_agent=request.headers.get("user-agent"),
@@ -113,47 +111,3 @@ async def update_user_status(
     )
     
     return user
-
-@router.get("/access-requests", response_model=List[schemas.AccessRequest])
-async def list_access_requests(
-    status: Optional[str] = None,
-    db: Session = Depends(get_db),
-    admin: models.User = Depends(check_admin)
-):
-    query = db.query(models.AccessRequest)
-    if status:
-        query = query.filter(models.AccessRequest.status == status)
-    return query.order_by(models.AccessRequest.created_at.desc()).all()
-
-@router.patch("/access-requests/{request_id}", response_model=schemas.AccessRequest)
-async def review_access_request(
-    request: Request,
-    request_id: int,
-    update_in: schemas.AccessRequestUpdate,
-    db: Session = Depends(get_db),
-    admin: models.User = Depends(check_admin)
-):
-    db_request = db.query(models.AccessRequest).filter(models.AccessRequest.id == request_id).first()
-    if not db_request:
-        raise HTTPException(status_code=404, detail="Solicitação não encontrada")
-    
-    db_request.status = update_in.status
-    db_request.reviewed_at = datetime.now()
-    db_request.reviewed_by_user_id = admin.id
-    
-    db.commit()
-    db.refresh(db_request)
-    
-    audit_service.log_event(
-        db,
-        event_type=f"ACCESS_REQUEST_{update_in.status}",
-        user_id=admin.id,
-        ip_address=request.client.host,
-        user_agent=request.headers.get("user-agent"),
-        path=f"/admin/access-requests/{request_id}",
-        method="PATCH",
-        status_code=200,
-        details=f"{update_in.status} solicitação de {db_request.email}"
-    )
-    
-    return db_request

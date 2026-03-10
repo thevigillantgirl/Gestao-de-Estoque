@@ -110,8 +110,14 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: str
 
+class UserRegister(BaseModel):
+    name: str
+    email: str
+    password: str
+
 class UserUpdate(BaseModel):
     email: Optional[str] = None
+    name: Optional[str] = None
     role: Optional[str] = None
     is_active: Optional[bool] = None
     password: Optional[str] = None
@@ -147,26 +153,6 @@ class AccessLog(AccessLogBase):
     user: Optional[User] = None
     model_config = ConfigDict(from_attributes=True)
 
-# Access Request
-class AccessRequestBase(BaseModel):
-    name: str
-    email: str
-    company: Optional[str] = None
-    message: Optional[str] = None
-
-class AccessRequestCreate(AccessRequestBase):
-    pass
-
-class AccessRequestUpdate(BaseModel):
-    status: str # "APPROVED", "REJECTED"
-
-class AccessRequest(AccessRequestBase):
-    id: int
-    status: str
-    created_at: datetime
-    reviewed_at: Optional[datetime] = None
-    reviewed_by_user_id: Optional[int] = None
-    model_config = ConfigDict(from_attributes=True)
 
 # Dashboard & Reports
 class DashboardStats(BaseModel):

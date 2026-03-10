@@ -12,9 +12,8 @@ import Login from './pages/Login';
 import Reports from './pages/Reports';
 import History from './pages/History';
 import Settings from './pages/Settings';
-import RequestAccess from './pages/RequestAccess';
+import Register from './pages/Register';
 import Users from './pages/admin/Users';
-import AccessRequests from './pages/admin/AccessRequests';
 import Logs from './pages/admin/Logs';
 
 const ProtectedRoute = ({ children }) => {
@@ -42,7 +41,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route path="/request-access" element={<RequestAccess />} />
+          <Route path="/register" element={<Register />} />
           <Route
             path="/"
             element={
@@ -63,7 +62,6 @@ function App() {
 
             {/* Admin Routes */}
             <Route path="users" element={<Users />} />
-            <Route path="access-requests" element={<AccessRequests />} />
             <Route path="logs" element={<Logs />} />
           </Route>
         </Routes>

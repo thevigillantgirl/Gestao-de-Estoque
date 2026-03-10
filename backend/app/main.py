@@ -1,16 +1,41 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from .db import engine, Base
+from contextlib import asynccontextmanager
+from .db import engine, Base, SessionLocal
+from . import security, models
 from .routers import (
     products, stock, suppliers, purchase_orders, 
     integrations, auth, admin_users, admin_logs, 
-    reports, search, settings, access_requests
+    reports, search, settings
 )
 
-# Create database tables
-Base.metadata.create_all(bind=engine)
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Create database tables
+    Base.metadata.create_all(bind=engine)
+    
+    # Create default admin if no admin exists
+    db = SessionLocal()
+    try:
+        admin_exists = db.query(models.User).filter(models.User.role == "ADMIN").first()
+        if not admin_exists:
+            print("INFO: Criando usuário administrador padrão (admin@admin.com)...")
+            hashed_pw = security.get_password_hash("123456")
+            admin_user = models.User(
+                name="Administrador",
+                email="admin@admin.com",
+                password_hash=hashed_pw,
+                role="ADMIN",
+                is_active=True
+            )
+            db.add(admin_user)
+            db.commit()
+    except Exception as e:
+        print(f"ERRO: Falha ao criar admin padrão: {e}")
+    finally:
+        db.close()
+    
+    yield
 
-app = FastAPI(title="Gestão de Estoque ERP")
+app = FastAPI(title="Gestão de Estoque ERP", lifespan=lifespan)
 
 # Add CORS Middleware
 app.add_middleware(
@@ -27,7 +52,6 @@ def health_check():
 
 # Include routers
 app.include_router(auth.router)
-app.include_router(access_requests.router)
 app.include_router(admin_users.router)
 app.include_router(admin_logs.router)
 app.include_router(search.router)

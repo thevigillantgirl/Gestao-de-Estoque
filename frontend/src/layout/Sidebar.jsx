@@ -37,7 +37,6 @@ const getNavItems = (isAdmin) => [
     ...(isAdmin ? [{
         group: 'Administração', items: [
             { name: 'Usuários', icon: Users, path: '/users' },
-            { name: 'Solicitações', icon: FileText, path: '/access-requests' },
             { name: 'Logs de Acesso', icon: ShieldCheck, path: '/logs' },
             { name: 'Integrações', icon: ExternalLink, path: '/integrations' },
             { name: 'Configurações', icon: Settings, path: '/settings' },

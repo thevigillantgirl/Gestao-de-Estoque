@@ -106,8 +106,8 @@ const Login = () => {
                     </form>
 
                     <div className="mt-6 border-t border-gray-100 pt-6 text-center space-y-3">
-                        <Link to="/request-access" className="text-sm font-bold text-indigo-600 hover:text-indigo-500 transition-colors block">
-                            Não tem conta? Solicitar acesso
+                        <Link to="/register" className="text-sm font-bold text-indigo-600 hover:text-indigo-500 transition-colors block">
+                            Não tem conta? Cadastre-se
                         </Link>
                         <p className="text-xs text-gray-500">
                             Ambiente Restrito &copy; {new Date().getFullYear()} Gestão de Estoque
