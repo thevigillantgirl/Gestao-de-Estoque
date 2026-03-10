@@ -13,18 +13,18 @@ export function DataTable({ columns, data, isLoading, emptyMessage = "Nenhum reg
         <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
                 <thead>
-                    <tr className="border-b border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900/50">
+                    <tr className="border-b border-gray-100 bg-[#F8FAFC]">
                         {columns.map((col, idx) => (
-                            <th key={idx} className="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            <th key={idx} className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                                 {col.header}
                             </th>
                         ))}
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200 dark:divide-slate-700">
+                <tbody className="divide-y divide-gray-50">
                     {data.length > 0 ? (
                         data.map((row, rowIdx) => (
-                            <tr key={rowIdx} className="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
+                            <tr key={rowIdx} className="hover:bg-gray-50/50 transition-colors group">
                                 {columns.map((col, colIdx) => (
                                     <td key={colIdx} className="px-4 py-4 text-sm text-gray-700 dark:text-gray-300">
                                         {col.render ? col.render(row) : row[col.accessor]}

@@ -43,21 +43,24 @@ export default function Stock() {
     const selectedProduct = products.find(p => p.id === parseInt(formData.product_id));
 
     return (
-        <div className="max-w-2xl mx-auto">
-            <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
-                <div className="p-6 border-b border-gray-200 dark:border-slate-700 flex items-center gap-3">
-                    <div className="p-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg">
-                        <ArrowLeftRight size={20} />
+        <div className="max-w-2xl mx-auto animate-in slide-in-from-bottom duration-500">
+            <div className="bg-white rounded-[10px] border border-gray-100 shadow-sm overflow-hidden">
+                <div className="p-8 border-b border-gray-50 flex items-center gap-4 bg-gray-50/30">
+                    <div className="p-3 bg-indigo-50 text-[#4F46E5] rounded-[10px] shadow-sm">
+                        <ArrowLeftRight size={22} />
                     </div>
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">Registrar Movimentação</h3>
+                    <div className="flex flex-col">
+                        <h3 className="text-xl font-bold text-[#111827] tracking-tight">Registrar Movimentação</h3>
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">Gestão de Fluxo Atlas</p>
+                    </div>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                <form onSubmit={handleSubmit} className="p-8 space-y-6">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Produto</label>
+                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Produto</label>
                         <select
                             required
-                            className="w-full bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 dark:text-white"
+                            className="w-full bg-gray-50 border border-gray-200 rounded-[10px] px-4 py-3 text-sm outline-none focus:border-[#4F46E5] focus:bg-white transition-all appearance-none"
                             value={formData.product_id}
                             onChange={e => setFormData({ ...formData, product_id: e.target.value })}
                         >
@@ -68,9 +71,9 @@ export default function Stock() {
                         </select>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tipo de Operação</label>
+                            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Tipo de Operação</label>
                             <div className="grid grid-cols-3 gap-2">
                                 {['IN', 'OUT', 'ADJUST'].map(type => (
                                     <button
@@ -78,22 +81,22 @@ export default function Stock() {
                                         type="button"
                                         onClick={() => setFormData({ ...formData, type })}
                                         className={`
-                      py-2 text-xs font-bold rounded-lg border transition-all
-                      ${formData.type === type
-                                                ? 'bg-blue-600 text-white border-blue-600 shadow-md ring-2 ring-blue-100 dark:ring-blue-900/30'
-                                                : 'bg-gray-50 dark:bg-slate-900 border-gray-200 dark:border-slate-700 text-gray-600 dark:text-gray-400 hover:bg-gray-100'}
-                    `}
+                                            py-3 text-[10px] font-bold rounded-[10px] border transition-all uppercase tracking-widest
+                                            ${formData.type === type
+                                                ? 'bg-[#4F46E5] text-white border-[#4F46E5] shadow-lg shadow-indigo-100'
+                                                : 'bg-white border-gray-100 text-gray-400 hover:bg-gray-50'}
+                                        `}
                                     >
-                                        {type === 'IN' ? 'Entrada (+)' : type === 'OUT' ? 'Saída (-)' : 'Ajuste (=)'}
+                                        {type === 'IN' ? 'Entrada' : type === 'OUT' ? 'Saída' : 'Ajuste'}
                                     </button>
                                 ))}
                             </div>
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Quantidade</label>
+                            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Quantidade</label>
                             <input
                                 type="number" required min="1"
-                                className="w-full bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 dark:text-white"
+                                className="w-full bg-gray-50 border border-gray-200 rounded-[10px] px-4 py-3 text-sm outline-none focus:border-[#4F46E5] focus:bg-white transition-all"
                                 value={formData.quantity}
                                 onChange={e => setFormData({ ...formData, quantity: parseInt(e.target.value) })}
                             />
@@ -101,36 +104,36 @@ export default function Stock() {
                     </div>
 
                     {selectedProduct && formData.type === 'OUT' && selectedProduct.stock < formData.quantity && (
-                        <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/30 rounded-lg flex items-center gap-2 text-red-600 dark:text-red-400 text-xs font-medium">
+                        <div className="p-4 bg-red-50 border border-red-100 rounded-[10px] flex items-center gap-2 text-red-600 text-xs font-bold">
                             <AlertCircle size={16} />
-                            Atenção: Estoque insuficiente para esta saída.
+                            Atenção: Estoque insuficiente no AtlasOne.
                         </div>
                     )}
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Motivo / Observação (Opcional)</label>
+                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Motivo / Observação</label>
                         <textarea
                             rows="3"
-                            className="w-full bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 dark:text-white resize-none"
-                            placeholder="Ex: Quebra de produto, devolução de cliente..."
+                            className="w-full bg-gray-50 border border-gray-200 rounded-[10px] px-4 py-3 text-sm outline-none focus:border-[#4F46E5] focus:bg-white transition-all resize-none"
+                            placeholder="Descreva o motivo da movimentação..."
                             value={formData.reason}
                             onChange={e => setFormData({ ...formData, reason: e.target.value })}
                         ></textarea>
                     </div>
 
-                    <div className="pt-4 border-t border-gray-100 dark:border-slate-700">
+                    <div className="pt-6 border-t border-gray-50">
                         {selectedProduct && (
-                            <div className="mb-4 flex items-center justify-between text-sm">
-                                <span className="text-gray-500">Estoque projetado:</span>
-                                <span className="font-bold text-gray-900 dark:text-white">
+                            <div className="mb-6 flex items-center justify-between px-2 text-sm">
+                                <span className="text-gray-400 font-medium">Estoque Projetado</span>
+                                <span className="font-bold text-gray-900 bg-gray-50 px-3 py-1 rounded-full">
                                     {formData.type === 'IN' ? selectedProduct.stock + formData.quantity :
                                         formData.type === 'OUT' ? selectedProduct.stock - formData.quantity :
                                             formData.quantity} un
                                 </span>
                             </div>
                         )}
-                        <Button type="submit" className="w-full py-3" disabled={loading || (selectedProduct && formData.type === 'OUT' && selectedProduct.stock < formData.quantity)}>
-                            {loading ? 'Processando...' : 'Confirmar Movimentação'}
+                        <Button type="submit" className="w-full py-4 text-base" disabled={loading || (selectedProduct && formData.type === 'OUT' && selectedProduct.stock < formData.quantity)}>
+                            {loading ? 'Processando Movimentação...' : 'Confirmar no AtlasOne'}
                         </Button>
                     </div>
                 </form>

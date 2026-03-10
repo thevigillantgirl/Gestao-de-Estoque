@@ -1,45 +1,33 @@
-# Sistema de Autenticação Avançada e Gestão de Usuários
+# Sistema de Autenticação e Cadastro Público
 
-O sistema de Gestão de Estoque foi atualizado para um modelo de "Cadastro Fechado", ideal para ambientes corporativos controlados.
+O sistema de Gestão de Estoque agora opera em um modelo de **Cadastro Aberto**, permitindo que novos usuários se registrem diretamente na plataforma.
 
-## 🔒 Novos Fluxos de Segurança
+## 🔓 Fluxos de Segurança e Acesso
 
-### 1. Sistema de "Cadastro Fechado"
-- O sistema agora é totalmente restrito. Apenas usuários cadastrados pelou administrador podem acessar.
-- **Solicitar Acesso**: Usuários sem conta podem preencher um formulário de solicitação (`/request-access`).
+### 1. Sistema de "Cadastro Aberto"
+- **Registro Público**: Novos usuários podem criar suas próprias contas através da página de cadastro (`/register`).
+- **Primeiro Admin**: O primeiro usuário a se cadastrar no sistema recebe automaticamente o perfil de `ADMIN`.
+- **Controle de Acesso**: Usuários subsequentes recebem o perfil `USER` por padrão, podendo ter suas permissões alteradas por um administrador.
 
-### 2. Notificações do Administrador
-- Toda nova solicitação dispara um e-mail automático para o administrador (`rochamarialuiza591@gmail.com`).
-- O e-mail contém os dados do solicitante (Nome, Empresa, Motivo) e instruções para aprovação.
-
-### 3. Painel Administrativo de Usuários (`/users`)
+### 2. Painel Administrativo de Usuários (`/users`)
 - Exclusivo para perfis `ADMIN`.
 - **Listar e Filtrar**: Visualização rápida de todos os usuários do sistema.
-- **Controle Total**: O administrador pode criar novas contas, alterar cargos (`ADMIN` vs `USER`) e desativar usuários instantaneamente.
+- **Controle Total**: O administrador pode alterar cargos (`ADMIN` vs `USER`) e desativar usuários instantaneamente.
 
-### 4. Gestão de Solicitações (`/access-requests`)
-- Interface para revisar solicitações pendentes.
-- **Aprovar/Rejeitar**: Processamento organizado de novos acessos.
-
-### 5. Auditoria e Logs Reforçados (`/logs`)
-- Registro centralizado de eventos críticos:
+### 3. Auditoria e Logs Centralizados (`/logs`)
+- Registro centralizado de eventos críticos para máxima segurança:
   - Sucesso e falha de login (incluindo motivo e IP).
-  - Criação e alteração de usuários.
-  - Solicitações de acesso recebidas e revisadas.
+  - Novos registros de usuários.
+  - Alteração de permissões e status por administradores.
   - Logouts.
 
 ---
 
 ## 🛠️ Detalhes Técnicos (Backend)
-- **Email**: Integrado via SMTP (Gmail) usando variáveis de ambiente (`.env`).
-- **Audit Helper**: Serviço centralizado para garantir que toda ação importante seja logada uniformemente.
-- **Modelos**: Novas tabelas `AccessRequest` e atualizações em `User` (campo `name`).
-
-## ⚙️ Configuração (Variáveis de Ambiente)
-Certifique-se de configurar o arquivo `.env` baseado no novo `.env.example`:
-- `SMTP_USER`: Seu e-mail (pref. Gmail).
-- `SMTP_PASS`: Senha de App (Gerada no Google Account).
-- `EMAIL_ADMIN_TO`: E-mail que receberá as notificações (`rochamarialuiza591@gmail.com`).
+- **Segurança**: Senhas criptografadas com `bcrypt` e autenticação via JWT (JSON Web Tokens).
+- **Audit Helper**: Serviço centralizado que garante o rastreamento de todas as ações importantes.
+- **Modelos**: Tabela `User` unificada com suporte a diferentes níveis de permissão.
 
 ---
-**O sistema agora está pronto para uma operação segura e auditável.**
+**O sistema está configurado para um crescimento escalável com segurança e auditoria completa.**
+

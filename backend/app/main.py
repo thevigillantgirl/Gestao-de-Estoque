@@ -1,10 +1,13 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from .db import engine, Base, SessionLocal
 from . import security, models
 from .routers import (
     products, stock, suppliers, purchase_orders, 
     integrations, auth, admin_users, admin_logs, 
-    reports, search, settings
+    reports, search, settings, price_search,
+    crm, clients, sales, finance, enterprise_ai, dashboard
 )
 
 @asynccontextmanager
@@ -62,3 +65,10 @@ app.include_router(stock.router)
 app.include_router(suppliers.router)
 app.include_router(purchase_orders.router)
 app.include_router(integrations.router)
+app.include_router(price_search.router)
+app.include_router(crm.router)
+app.include_router(clients.router)
+app.include_router(sales.router)
+app.include_router(finance.router)
+app.include_router(enterprise_ai.router)
+app.include_router(dashboard.router)

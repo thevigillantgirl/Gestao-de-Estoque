@@ -56,11 +56,11 @@ export default function Suppliers() {
         {
             header: 'Nome',
             render: (row) => (
-                <div onClick={() => handleViewDetail(row)} className="flex items-center gap-3 cursor-pointer group">
-                    <div className="w-10 h-10 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded flex items-center justify-center group-hover:scale-110 transition-transform">
+                <div onClick={() => handleViewDetail(row)} className="flex items-center gap-4 cursor-pointer group">
+                    <div className="w-10 h-10 bg-indigo-50 text-[#4F46E5] rounded-[10px] flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm">
                         <Users size={20} />
                     </div>
-                    <span className="font-bold text-blue-600 dark:text-blue-400 group-hover:underline">{row.name}</span>
+                    <span className="font-bold text-[#4F46E5] group-hover:underline text-sm">{row.name}</span>
                 </div>
             )
         },
@@ -149,9 +149,9 @@ export default function Suppliers() {
             <Modal isOpen={isDetailModalOpen} onClose={() => setIsDetailModalOpen(false)} title="Perfil do Fornecedor">
                 {selectedSupplier && (
                     <div className="space-y-6">
-                        <div className="flex items-center gap-4 bg-gray-50 dark:bg-slate-900 p-6 rounded-2xl border border-gray-100 dark:border-slate-700">
-                            <div className="w-16 h-16 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-blue-200 dark:shadow-none">
-                                <Users size={32} />
+                        <div className="flex items-center gap-5 bg-gray-50 p-6 rounded-[12px] border border-gray-100">
+                            <div className="w-16 h-16 bg-[#4F46E5] text-white rounded-[12px] flex items-center justify-center shadow-lg shadow-indigo-200">
+                                <Users size={30} />
                             </div>
                             <div>
                                 <h3 className="text-xl font-bold text-gray-900 dark:text-white">{selectedSupplier.name}</h3>

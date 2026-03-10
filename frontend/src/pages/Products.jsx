@@ -50,13 +50,13 @@ export default function Products() {
         {
             header: 'Produto',
             render: (row) => (
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gray-100 dark:bg-slate-700 rounded flex items-center justify-center text-gray-400">
-                        <Package size={20} />
+                <div className="flex items-center gap-4">
+                    <div className="w-11 h-11 bg-indigo-50 rounded-[10px] flex items-center justify-center text-[#4F46E5] shadow-sm">
+                        <Package size={22} />
                     </div>
                     <div>
-                        <p className="font-bold text-gray-900 dark:text-white">{row.name}</p>
-                        <p className="text-xs text-gray-500">{row.sku}</p>
+                        <p className="font-bold text-[#111827] text-sm">{row.name}</p>
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{row.sku}</p>
                     </div>
                 </div>
             )

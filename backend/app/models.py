@@ -3,19 +3,47 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from .db import Base
 
+class Category(Base):
+    __tablename__ = "categories"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    parent_id = Column(Integer, ForeignKey("categories.id"), nullable=True)
+    
+    parent = relationship("Category", remote_side=[id], backref="subcategories")
+    products = relationship("Product", back_populates="category_rel")
+
 class Product(Base):
     __tablename__ = "products"
 
     id = Column(Integer, primary_key=True, index=True)
     sku = Column(String, unique=True, index=True, nullable=False)
     name = Column(String, nullable=False)
+    description = Column(Text, nullable=True)
+    image_url = Column(String, nullable=True)
     cost = Column(Float, default=0.0)
     price = Column(Float, default=0.0)
     stock = Column(Integer, default=0)
     min_stock = Column(Integer, default=0)
-    category = Column(String, nullable=True)
+    category_id = Column(Integer, ForeignKey("categories.id"), nullable=True)
+    category = Column(String, nullable=True) # Legacy field
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    category_rel = relationship("Category", back_populates="products")
+    prices = relationship("ProductPrice", back_populates="product")
+
+class ProductPrice(Base):
+    __tablename__ = "product_prices"
+
+    id = Column(Integer, primary_key=True, index=True)
+    product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
+    state = Column(String(2), nullable=False) # e.g., "SP", "MG"
+    supplier = Column(String, nullable=False)
+    price = Column(Float, nullable=False)
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    product = relationship("Product", back_populates="prices")
 
 class StockMovement(Base):
     __tablename__ = "stock_movements"

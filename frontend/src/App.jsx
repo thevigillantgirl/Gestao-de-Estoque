@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { Layout } from './layout/Layout';
+// import { Layout } from './layout/Layout';
 import { AuthProvider, useAuth } from './api/AuthContext';
 import Dashboard from './pages/Dashboard';
 import Products from './pages/Products';
@@ -13,8 +13,14 @@ import Reports from './pages/Reports';
 import History from './pages/History';
 import Settings from './pages/Settings';
 import Register from './pages/Register';
+import Sales from './pages/Sales';
+import Clients from './pages/Clients';
+import CRM from './pages/CRM';
+import Finance from './pages/Finance';
+import EnterpriseAI from './pages/EnterpriseAI';
 import Users from './pages/admin/Users';
 import Logs from './pages/admin/Logs';
+import Layout from './layout/Layout';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -60,9 +66,16 @@ function App() {
             <Route path="settings" element={<Settings />} />
             <Route path="reports" element={<Reports />} />
 
+            <Route path="sales" element={<Sales />} />
+            <Route path="crm" element={<CRM />} />
+            <Route path="finance" element={<Finance />} />
+            <Route path="ai" element={<EnterpriseAI />} />
+            <Route path="clients" element={<Clients />} />
+            <Route path="purchases" element={<PurchaseOrders />} />
+
             {/* Admin Routes */}
-            <Route path="users" element={<Users />} />
-            <Route path="logs" element={<Logs />} />
+            <Route path="admin/users" element={<Users />} />
+            <Route path="admin/logs" element={<Logs />} />
           </Route>
         </Routes>
       </BrowserRouter>

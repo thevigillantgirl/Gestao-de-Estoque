@@ -1,0 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    body {
+        @apply font-sans antialiased bg-[#F6F7FB] text-[#111827];
+        font-family: 'Inter', sans-serif;
+    }
+}
+
+@layer components {
+    .btn-primary {
+        @apply bg-[#4F46E5] text-white px-5 py-2.5 rounded-[10px] font-bold text-sm hover:bg-[#4338CA] transition-all shadow-lg shadow-indigo-200 active:scale-95;
+    }
+
+    .card-atlas {
+        @apply bg-white rounded-[10px] border border-gray-100 shadow-sm hover:shadow-md transition-all;
+    }
+}
+
+/* Custom Scrollbar for Workspace */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-gray-200 rounded-full hover:bg-gray-300 transition-colors;
+}
+
+.scrollbar-indigo::-webkit-scrollbar-thumb {
+    @apply bg-indigo-100 hover:bg-indigo-200;
+}

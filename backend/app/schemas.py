@@ -2,14 +2,44 @@ from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 from typing import List, Optional
 
+# Category
+class CategoryBase(BaseModel):
+    name: str
+    parent_id: Optional[int] = None
+
+class CategoryCreate(CategoryBase):
+    pass
+
+class Category(CategoryBase):
+    id: int
+    model_config = ConfigDict(from_attributes=True)
+
+# Product Price by State
+class ProductPriceBase(BaseModel):
+    product_id: int
+    state: str
+    supplier: str
+    price: float
+
+class ProductPriceCreate(ProductPriceBase):
+    pass
+
+class ProductPrice(ProductPriceBase):
+    id: int
+    updated_at: datetime
+    model_config = ConfigDict(from_attributes=True)
+
 # Shared schemas
 class ProductBase(BaseModel):
     sku: str
     name: str
+    description: Optional[str] = None
+    image_url: Optional[str] = None
     cost: float = 0.0
     price: float = 0.0
     stock: int = 0
     min_stock: int = 0
+    category_id: Optional[int] = None
     category: Optional[str] = None
     is_active: bool = True
 
@@ -19,6 +49,8 @@ class ProductCreate(ProductBase):
 class Product(ProductBase):
     id: int
     created_at: datetime
+    category_rel: Optional[Category] = None
+    prices: List[ProductPrice] = []
     model_config = ConfigDict(from_attributes=True)
 
 # Stock Movement
